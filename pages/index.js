@@ -24,13 +24,21 @@ export default function Home() {
         setLastData("Error al obtener datos: " + error.message);
       }
     }
+
+    // Llamada inicial
     fetchData();
+
+    // Refrescar cada 1 segundo
+    const interval = setInterval(fetchData, 1000);
+
+    // Limpiar intervalo al desmontar el componente
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>
       <h1>📊 Datos desde Google Sheets</h1>
-      <p>Último registro recibido:</p>
+      <p>Último registro recibido (actualizado cada 1 segundo):</p>
       <pre style={{ background: "#f4f4f4", padding: "10px" }}>{lastData}</pre>
     </div>
   );

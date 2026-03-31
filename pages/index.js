@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [lastData, setLastData] = useState("");
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -16,12 +16,12 @@ export default function Home() {
 
         const json = await response.json(); // El doGet devuelve un array JSON
         if (Array.isArray(json) && json.length > 0) {
-          setLastData(json[json.length - 1]); // Último elemento del array
+          setData(json);
         } else {
-          setLastData("No hay datos disponibles.");
+          setData([]);
         }
       } catch (error) {
-        setLastData("Error al obtener datos: " + error.message);
+        setData(["Error al obtener datos: " + error.message]);
       }
     }
 
@@ -31,15 +31,50 @@ export default function Home() {
     // Refrescar cada 1 segundo
     const interval = setInterval(fetchData, 1000);
 
-    // Limpiar intervalo al desmontar el componente
     return () => clearInterval(interval);
   }, []);
 
+  // Último dato
+  const lastData = data.length > 0 ? data[data.length - 1] : "No hay datos disponibles.";
+  // Últimos 4 anteriores
+  const previousData = data.slice(-5, -1).reverse();
+
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>
-      <h1>📊 Datos desde Google Sheets</h1>
-      <p>Último registro recibido (actualizado cada 1 segundo):</p>
-      <pre style={{ background: "#f4f4f4", padding: "10px" }}>{lastData}</pre>
+    <div
+      style={{
+        fontFamily: "Arial, sans-serif",
+        minHeight: "100vh",
+        margin: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(to bottom, #2e8b57, #006400)", // verde pasto a verde inglés
+        color: "white",
+        textAlign: "center"
+      }}
+    >
+      <h1 style={{ marginBottom: "40px", fontSize: "3em" }}>Agro IoT</h1>
+
+      <div style={{ fontSize: "2em", marginBottom: "20px" }}>
+        Último registro: <br />
+        <span style={{ fontWeight: "bold" }}>{lastData}</span>
+      </div>
+
+      <div style={{ fontSize: "1.2em" }}>
+        <p>Registros anteriores:</p>
+        {previousData.length > 0 ? (
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {previousData.map((item, index) => (
+              <li key={index} style={{ marginBottom: "8px" }}>
+                {item}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No hay registros anteriores.</p>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [data, setData] = useState("");
+  const [lastData, setLastData] = useState("");
 
   useEffect(() => {
     async function fetchData() {
@@ -9,10 +9,19 @@ export default function Home() {
         const response = await fetch(
           "https://script.google.com/macros/s/AKfycbw56ThQfcvNzkQzzgaj94gJjqCms0jB_z7MwjbZ92Hlh_fpO_UhifSzRUwFfWQTuwu6GQ/exec"
         );
-        const text = await response.text(); // El endpoint devuelve texto plano
-        setData(text);
+
+        if (!response.ok) {
+          throw new Error("Respuesta HTTP no OK: " + response.status);
+        }
+
+        const json = await response.json(); // El doGet devuelve un array JSON
+        if (Array.isArray(json) && json.length > 0) {
+          setLastData(json[json.length - 1]); // Último elemento del array
+        } else {
+          setLastData("No hay datos disponibles.");
+        }
       } catch (error) {
-        setData("Error al obtener datos: " + error.message);
+        setLastData("Error al obtener datos: " + error.message);
       }
     }
     fetchData();
@@ -22,7 +31,7 @@ export default function Home() {
     <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>
       <h1>📊 Datos desde Google Sheets</h1>
       <p>Último registro recibido:</p>
-      <pre style={{ background: "#f4f4f4", padding: "10px" }}>{data}</pre>
+      <pre style={{ background: "#f4f4f4", padding: "10px" }}>{lastData}</pre>
     </div>
   );
 }

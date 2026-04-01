@@ -37,7 +37,7 @@ export default function Home() {
   // Función para generar resumen del historial
   function resumenHistorial(records) {
     if (records.length === 0) return "No hay registros anteriores.";
-    return records.map((item, index) => `${item.dia} ${item.hora}`).join(" | ");
+    return records.map((item) => `${item.dia} ${item.hora}`).join(" | ");
   }
 
   return (
@@ -224,6 +224,4 @@ export default function Home() {
                           {activeTab === "ubicacion" ? (
                             <>
                               <div><strong>Ciudad:</strong> {item.ciudad}</div>
-                              <div><strong>Lugar:</strong> {item.lugar}</div>
-                            </>
-                          )
+                              <div><strong>Lugar:</strong> {item.lugar}</

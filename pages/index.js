@@ -3,6 +3,7 @@ import Head from "next/head";
 
 export default function Home() {
   const [data, setData] = useState([]);
+  const [activeTab, setActiveTab] = useState("ubicacion"); // pestaña activa
 
   useEffect(() => {
     async function fetchData() {
@@ -22,7 +23,7 @@ export default function Home() {
           setData([]);
         }
       } catch (error) {
-        setData(["Error al obtener datos: " + error.message]);
+        setData([{ ciudad: "Error", lugar: "", dia: "", hora: error.message }]);
       }
     }
 
@@ -31,13 +32,14 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  const lastData = data.length > 0 ? data[data.length - 1] : "No hay datos disponibles.";
-  const previousData = data.slice(-5, -1).reverse();
+  // Último registro
+  const lastRecord = data.length > 0 ? data[data.length - 1] : null;
+  // Últimos 4 anteriores
+  const previousRecords = data.slice(-5, -1).reverse();
 
   return (
     <>
       <Head>
-        {/* Importar tipografía moderna */}
         <link
           href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
           rel="stylesheet"
@@ -48,53 +50,57 @@ export default function Home() {
           fontFamily: "'Montserrat', sans-serif",
           minHeight: "100vh",
           margin: 0,
+          display: "flex",
           background: "linear-gradient(to bottom, rgba(152,251,152,0.9), rgba(60,179,113,0.8))",
           color: "white",
-          display: "flex",
-          flexDirection: "column",
-          position: "relative",
           overflow: "hidden"
         }}
       >
-        {/* Figuras geométricas decorativas */}
-        <div
+        {/* Menú lateral */}
+        <aside
           style={{
-            position: "absolute",
-            top: "20%",
-            left: "10%",
-            width: "80px",
-            height: "80px",
-            backgroundColor: "rgba(255,255,255,0.15)",
-            transform: "rotate(45deg)",
-            borderRadius: "8px"
-          }}
-        ></div>
-        <div
-          style={{
-            position: "absolute",
-            bottom: "15%",
-            right: "15%",
-            width: "100px",
-            height: "100px",
-            backgroundColor: "rgba(255,255,255,0.1)",
-            transform: "rotate(45deg)",
-            borderRadius: "12px"
-          }}
-        ></div>
-
-        {/* Encabezado arriba a la izquierda */}
-        <header
-          style={{
+            width: "200px",
+            backgroundColor: "rgba(0,0,0,0.2)",
             padding: "20px",
-            fontSize: "2em",
-            fontWeight: "600",
-            textAlign: "left"
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px"
           }}
         >
-          Agro IoT
-        </header>
+          <h2 style={{ marginBottom: "30px" }}>Agro IoT</h2>
+          <button
+            onClick={() => setActiveTab("ubicacion")}
+            style={{
+              backgroundColor: activeTab === "ubicacion" ? "rgba(255,255,255,0.3)" : "transparent",
+              border: "none",
+              color: "white",
+              fontSize: "1.2em",
+              padding: "10px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              textAlign: "left"
+            }}
+          >
+            Ubicación
+          </button>
+          <button
+            onClick={() => setActiveTab("momento")}
+            style={{
+              backgroundColor: activeTab === "momento" ? "rgba(255,255,255,0.3)" : "transparent",
+              border: "none",
+              color: "white",
+              fontSize: "1.2em",
+              padding: "10px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              textAlign: "left"
+            }}
+          >
+            Momento
+          </button>
+        </aside>
 
-        {/* Contenido centrado */}
+        {/* Contenido principal */}
         <main
           style={{
             flex: 1,
@@ -103,46 +109,73 @@ export default function Home() {
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            zIndex: 1
+            padding: "40px"
           }}
         >
-          <div
-            style={{
-              fontSize: "2em",
-              marginBottom: "30px",
-              backgroundColor: "rgba(255,255,255,0.15)",
-              padding: "20px 40px",
-              borderRadius: "15px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.3)"
-            }}
-          >
-            Último registro: <br />
-            <span style={{ fontWeight: "bold" }}>{lastData}</span>
-          </div>
-
-          <div style={{ fontSize: "1.2em", width: "100%", maxWidth: "400px" }}>
-            <p>Registros anteriores:</p>
-            {previousData.length > 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {previousData.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      backgroundColor: "rgba(255,255,255,0.2)",
-                      padding: "12px 20px",
-                      borderRadius: "50px",
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                      textAlign: "center"
-                    }}
-                  >
-                    {item}
-                  </div>
-                ))}
+          {lastRecord ? (
+            <>
+              {/* Último registro */}
+              <div
+                style={{
+                  fontSize: "1.8em",
+                  marginBottom: "30px",
+                  backgroundColor: "rgba(255,255,255,0.15)",
+                  padding: "20px 40px",
+                  borderRadius: "15px",
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.3)"
+                }}
+              >
+                {activeTab === "ubicacion" ? (
+                  <>
+                    <div><strong>Ciudad:</strong> {lastRecord.ciudad}</div>
+                    <div><strong>Lugar:</strong> {lastRecord.lugar}</div>
+                  </>
+                ) : (
+                  <>
+                    <div><strong>Día:</strong> {lastRecord.dia}</div>
+                    <div><strong>Hora:</strong> {lastRecord.hora}</div>
+                  </>
+                )}
               </div>
-            ) : (
-              <p>No hay registros anteriores.</p>
-            )}
-          </div>
+
+              {/* Registros anteriores */}
+              <div style={{ fontSize: "1.2em", width: "100%", maxWidth: "400px" }}>
+                <p>Registros anteriores:</p>
+                {previousRecords.length > 0 ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    {previousRecords.map((item, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          backgroundColor: "rgba(255,255,255,0.2)",
+                          padding: "12px 20px",
+                          borderRadius: "50px",
+                          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                          textAlign: "center"
+                        }}
+                      >
+                        {activeTab === "ubicacion" ? (
+                          <>
+                            <div><strong>Ciudad:</strong> {item.ciudad}</div>
+                            <div><strong>Lugar:</strong> {item.lugar}</div>
+                          </>
+                        ) : (
+                          <>
+                            <div><strong>Día:</strong> {item.dia}</div>
+                            <div><strong>Hora:</strong> {item.hora}</div>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p>No hay registros anteriores.</p>
+                )}
+              </div>
+            </>
+          ) : (
+            <p>No hay datos disponibles.</p>
+          )}
         </main>
       </div>
     </>

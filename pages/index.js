@@ -15,7 +15,14 @@ export default function Home() {
 
         const json = await response.json();
         if (Array.isArray(json) && json.length > 0) {
-          setData(json);
+          // Convertir todos los valores explícitamente a string
+          const cleanData = json.map(item => ({
+            ciudad: String(item.ciudad),
+            lugar: String(item.lugar),
+            dia: String(item.dia),
+            hora: String(item.hora)
+          }));
+          setData(cleanData);
         } else {
           setData([]);
         }

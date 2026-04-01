@@ -37,15 +37,25 @@ export default function Home() {
   const lastRecord = data.length > 0 ? data[data.length - 1] : null;
   const previousRecords = data.slice(-5, -1).reverse();
 
-  // Filtrar registros por fecha seleccionada
-  const registrosPorFecha = data.filter(
-    (item) => item.dia === selectedDate.toLocaleDateString("es-AR")
-  );
-
-  function resumenHistorial(records) {
-    if (records.length === 0) return "No hay registros anteriores.";
-    return records.map((item) => `${item.dia} ${item.hora}`).join(" | ");
+  // Normalizar fechas: convertir ambas a formato YYYY-MM-DD
+  function normalizarFecha(fechaStr) {
+    try {
+      const partes = fechaStr.split("/");
+      if (partes.length === 3) {
+        // Suponiendo formato DD/MM/YYYY en tu Google Sheets
+        const [dia, mes, anio] = partes;
+        return `${anio}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+      }
+      return fechaStr;
+    } catch {
+      return fechaStr;
+    }
   }
+
+  const fechaSeleccionada = selectedDate.toISOString().split("T")[0];
+  const registrosPorFecha = data.filter(
+    (item) => normalizarFecha(item.dia) === fechaSeleccionada
+  );
 
   return (
     <>

@@ -15,19 +15,8 @@ export default function Home() {
 
         const json = await response.json();
         if (Array.isArray(json) && json.length > 0) {
-          const cleanData = json.map(item => {
-            // Si el valor es un objeto Date, lo formateamos
-            const diaVal = item.dia instanceof Date ? formatDate(item.dia) : String(item.dia);
-            const horaVal = item.hora instanceof Date ? formatTime(item.hora) : String(item.hora);
-
-            return {
-              ciudad: String(item.ciudad),
-              lugar: String(item.lugar),
-              dia: diaVal,
-              hora: horaVal
-            };
-          });
-          setData(cleanData);
+          // Los datos ya vienen formateados desde Apps Script
+          setData(json);
         } else {
           setData([]);
         }
@@ -40,17 +29,6 @@ export default function Home() {
     const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
   }, []);
-
-  // Funciones auxiliares para formatear
-  function formatDate(value) {
-    const d = new Date(value);
-    return d.toLocaleDateString("es-AR"); // dd/mm/yyyy
-  }
-
-  function formatTime(value) {
-    const d = new Date(value);
-    return d.toLocaleTimeString("es-AR"); // HH:MM:SS
-  }
 
   const lastRecord = data.length > 0 ? data[data.length - 1] : null;
   const previousRecords = data.slice(-5, -1).reverse();

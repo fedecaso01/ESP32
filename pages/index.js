@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { FaHome, FaClock } from "react-icons/fa";
+import { FaHome, FaClock, FaList } from "react-icons/fa";
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -34,6 +34,12 @@ export default function Home() {
   const lastRecord = data.length > 0 ? data[data.length - 1] : null;
   const previousRecords = data.slice(-5, -1).reverse();
 
+  // Función para generar resumen del historial
+  function resumenHistorial(records) {
+    if (records.length === 0) return "No hay registros anteriores.";
+    return records.map((item, index) => `${item.dia} ${item.hora}`).join(" | ");
+  }
+
   return (
     <>
       <Head>
@@ -66,9 +72,12 @@ export default function Home() {
             transition: "width 0.3s ease"
           }}
         >
-          {sidebarOpen && (
+          {sidebarOpen ? (
             <h2 style={{ marginBottom: "30px", alignSelf: "center" }}>La Pachamama</h2>
+          ) : (
+            <h2 style={{ marginBottom: "30px" }}>LP</h2>
           )}
+
           <button
             onClick={() => setActiveTab("ubicacion")}
             style={{
@@ -89,6 +98,7 @@ export default function Home() {
             <FaHome />
             {sidebarOpen && "Ubicación"}
           </button>
+
           <button
             onClick={() => setActiveTab("momento")}
             style={{
@@ -108,6 +118,32 @@ export default function Home() {
           >
             <FaClock />
             {sidebarOpen && "Momento"}
+          </button>
+
+          <button
+            onClick={() => setActiveTab("historial")}
+            style={{
+              backgroundColor: activeTab === "historial" ? "rgba(255,255,255,0.3)" : "transparent",
+              border: "none",
+              color: "white",
+              fontSize: "1.1em",
+              padding: "10px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              width: "100%",
+              textAlign: sidebarOpen ? "left" : "center",
+              lineHeight: "1.2em"
+            }}
+          >
+            <FaList />
+            {sidebarOpen && (
+              <span style={{ display: "block" }}>
+                Historial<br />de registros
+              </span>
+            )}
           </button>
         </aside>
 
@@ -129,69 +165,65 @@ export default function Home() {
           {lastRecord ? (
             <>
               {/* Último registro */}
-              <div
-                style={{
-                  fontSize: "1.5em",
-                  marginBottom: "30px",
-                  backgroundColor: "rgba(255,255,255,0.15)",
-                  padding: "20px 40px",
-                  borderRadius: "15px",
-                  boxShadow: "0 4px 10px rgba(0,0,0,0.3)"
-                }}
-              >
-                {activeTab === "ubicacion" ? (
-                  <>
-                    <div><strong>Ciudad:</strong> {lastRecord.ciudad}</div>
-                    <div><strong>Lugar:</strong> {lastRecord.lugar}</div>
-                  </>
-                ) : (
-                  <>
-                    <div><strong>Día:</strong> {lastRecord.dia}</div>
-                    <div><strong>Hora:</strong> {lastRecord.hora}</div>
-                  </>
-                )}
-              </div>
+              {activeTab !== "historial" && (
+                <div
+                  style={{
+                    fontSize: "1.5em",
+                    marginBottom: "30px",
+                    backgroundColor: "rgba(255,255,255,0.15)",
+                    padding: "20px 40px",
+                    borderRadius: "15px",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.3)"
+                  }}
+                >
+                  {activeTab === "ubicacion" ? (
+                    <>
+                      <div><strong>Ciudad:</strong> {lastRecord.ciudad}</div>
+                      <div><strong>Lugar:</strong> {lastRecord.lugar}</div>
+                    </>
+                  ) : (
+                    <>
+                      <div><strong>Día:</strong> {lastRecord.dia}</div>
+                      <div><strong>Hora:</strong> {lastRecord.hora}</div>
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* Registros anteriores */}
-              <div style={{ fontSize: "1.1em", width: "100%", maxWidth: "400px" }}>
-                <p>Registros anteriores:</p>
-                {previousRecords.length > 0 ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                    {previousRecords.map((item, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          backgroundColor: "rgba(255,255,255,0.2)",
-                          padding: "12px 20px",
-                          borderRadius: "50px",
-                          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                          textAlign: "center"
-                        }}
-                      >
-                        {activeTab === "ubicacion" ? (
-                          <>
-                            <div><strong>Ciudad:</strong> {item.ciudad}</div>
-                            <div><strong>Lugar:</strong> {item.lugar}</div>
-                          </>
-                        ) : (
-                          <>
-                            <div><strong>Día:</strong> {item.dia}</div>
-                            <div><strong>Hora:</strong> {item.hora}</div>
-                          </>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p>No hay registros anteriores.</p>
-                )}
-              </div>
-            </>
-          ) : (
-            <p>No hay datos disponibles.</p>
-          )}
-        </main>
-      </div>
-    </>
-  );
-}
+              {activeTab === "historial" ? (
+                <div
+                  style={{
+                    fontSize: "1.2em",
+                    backgroundColor: "rgba(255,255,255,0.15)",
+                    padding: "20px",
+                    borderRadius: "15px",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+                    maxWidth: "600px"
+                  }}
+                >
+                  <strong>Resumen del historial:</strong>
+                  <p style={{ marginTop: "15px" }}>{resumenHistorial(previousRecords)}</p>
+                </div>
+              ) : (
+                <div style={{ fontSize: "1.1em", width: "100%", maxWidth: "400px" }}>
+                  <p>Registros anteriores:</p>
+                  {previousRecords.length > 0 ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                      {previousRecords.map((item, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            backgroundColor: "rgba(255,255,255,0.2)",
+                            padding: "12px 20px",
+                            borderRadius: "50px",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                            textAlign: "center"
+                          }}
+                        >
+                          {activeTab === "ubicacion" ? (
+                            <>
+                              <div><strong>Ciudad:</strong> {item.ciudad}</div>
+                              <div><strong>Lugar:</strong> {item.lugar}</div>
+                            </>
+                          )

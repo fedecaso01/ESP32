@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import { FaHome, FaClock, FaList } from "react-icons/fa";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 export default function Home() {
   const [data, setData] = useState([]);
   const [activeTab, setActiveTab] = useState("ubicacion");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     async function fetchData() {
@@ -33,6 +36,11 @@ export default function Home() {
 
   const lastRecord = data.length > 0 ? data[data.length - 1] : null;
   const previousRecords = data.slice(-5, -1).reverse();
+
+  // Filtrar registros por fecha seleccionada
+  const registrosPorFecha = data.filter(
+    (item) => item.dia === selectedDate.toLocaleDateString("es-AR")
+  );
 
   function resumenHistorial(records) {
     if (records.length === 0) return "No hay registros anteriores.";
@@ -77,67 +85,16 @@ export default function Home() {
             <h2 style={{ marginBottom: "30px" }}>LP</h2>
           )}
 
-          <button
-            onClick={() => setActiveTab("ubicacion")}
-            style={{
-              backgroundColor: activeTab === "ubicacion" ? "rgba(255,255,255,0.3)" : "transparent",
-              border: "none",
-              color: "white",
-              fontSize: "1.2em",
-              padding: "10px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              width: "100%",
-              textAlign: sidebarOpen ? "left" : "center"
-            }}
-          >
-            <FaHome />
-            {sidebarOpen && "Ubicación"}
+          <button onClick={() => setActiveTab("ubicacion")} style={buttonStyle(activeTab === "ubicacion")}>
+            <FaHome /> {sidebarOpen && "Ubicación"}
           </button>
 
-          <button
-            onClick={() => setActiveTab("momento")}
-            style={{
-              backgroundColor: activeTab === "momento" ? "rgba(255,255,255,0.3)" : "transparent",
-              border: "none",
-              color: "white",
-              fontSize: "1.2em",
-              padding: "10px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              width: "100%",
-              textAlign: sidebarOpen ? "left" : "center"
-            }}
-          >
-            <FaClock />
-            {sidebarOpen && "Momento"}
+          <button onClick={() => setActiveTab("momento")} style={buttonStyle(activeTab === "momento")}>
+            <FaClock /> {sidebarOpen && "Momento"}
           </button>
 
-          <button
-            onClick={() => setActiveTab("historial")}
-            style={{
-              backgroundColor: activeTab === "historial" ? "rgba(255,255,255,0.3)" : "transparent",
-              border: "none",
-              color: "white",
-              fontSize: "1.1em",
-              padding: "10px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              width: "100%",
-              textAlign: sidebarOpen ? "left" : "center",
-              lineHeight: "1.2em"
-            }}
-          >
-            <FaList />
+          <button onClick={() => setActiveTab("historial")} style={buttonStyle(activeTab === "historial")}>
+            <FaList />{" "}
             {sidebarOpen && (
               <span style={{ display: "block" }}>
                 Historial<br />de registros
@@ -162,78 +119,41 @@ export default function Home() {
 
           {lastRecord ? (
             <>
-              {activeTab !== "historial" && (
-                <div
-                  style={{
-                    fontSize: "1.5em",
-                    marginBottom: "30px",
-                    backgroundColor: "rgba(255,255,255,0.15)",
-                    padding: "20px 40px",
-                    borderRadius: "15px",
-                    boxShadow: "0 4px 10px rgba(0,0,0,0.3)"
-                  }}
-                >
-                  {activeTab === "ubicacion" ? (
-                    <>
-                      <div><strong>Ciudad:</strong> {lastRecord.ciudad}</div>
-                      <div><strong>Lugar:</strong> {lastRecord.lugar}</div>
-                    </>
-                  ) : (
-                    <>
-                      <div><strong>Día:</strong> {lastRecord.dia}</div>
-                      <div><strong>Hora:</strong> {lastRecord.hora}</div>
-                    </>
-                  )}
+              {activeTab === "ubicacion" && (
+                <div style={cardStyle}>
+                  <div><strong>Ciudad:</strong> {lastRecord.ciudad}</div>
+                  <div><strong>Lugar:</strong> {lastRecord.lugar}</div>
                 </div>
               )}
 
-              {activeTab === "historial" ? (
-                <div
-                  style={{
-                    fontSize: "1.2em",
-                    backgroundColor: "rgba(255,255,255,0.15)",
-                    padding: "20px",
-                    borderRadius: "15px",
-                    boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-                    maxWidth: "600px"
-                  }}
-                >
-                  <strong>Resumen del historial:</strong>
-                  <p style={{ marginTop: "15px" }}>{resumenHistorial(previousRecords)}</p>
+              {activeTab === "momento" && (
+                <div style={cardStyle}>
+                  <div><strong>Día:</strong> {lastRecord.dia}</div>
+                  <div><strong>Hora:</strong> {lastRecord.hora}</div>
                 </div>
-              ) : (
-                <div style={{ fontSize: "1.1em", width: "100%", maxWidth: "400px" }}>
-                  <p>Registros anteriores:</p>
-                  {previousRecords.length > 0 ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                      {previousRecords.map((item, index) => (
-                        <div
-                          key={index}
-                          style={{
-                            backgroundColor: "rgba(255,255,255,0.2)",
-                            padding: "12px 20px",
-                            borderRadius: "50px",
-                            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                            textAlign: "center"
-                          }}
-                        >
-                          {activeTab === "ubicacion" ? (
-                            <>
-                              <div><strong>Ciudad:</strong> {item.ciudad}</div>
-                              <div><strong>Lugar:</strong> {item.lugar}</div>
-                            </>
-                          ) : (
-                            <>
-                              <div><strong>Día:</strong> {item.dia}</div>
-                              <div><strong>Hora:</strong> {item.hora}</div>
-                            </>
-                          )}
+              )}
+
+              {activeTab === "historial" && (
+                <div style={{ width: "100%", maxWidth: "600px" }}>
+                  <Calendar
+                    onChange={setSelectedDate}
+                    value={selectedDate}
+                  />
+                  <div style={cardStyle}>
+                    <strong>Registros del {selectedDate.toLocaleDateString("es-AR")}:</strong>
+                    {registrosPorFecha.length > 0 ? (
+                      registrosPorFecha.map((item, index) => (
+                        <div key={index} style={{ marginTop: "10px" }}>
+                          <div><strong>Ciudad:</strong> {item.ciudad}</div>
+                          <div><strong>Lugar:</strong> {item.lugar}</div>
+                          <div><strong>Día:</strong> {item.dia}</div>
+                          <div><strong>Hora:</strong> {item.hora}</div>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p>No hay registros anteriores.</p>
-                  )}
+                      ))
+                    ) : (
+                      <p>No hay registros para esta fecha.</p>
+                    )}
+                  </div>
                 </div>
               )}
             </>
@@ -244,4 +164,31 @@ export default function Home() {
       </div>
     </>
   );
+}
+
+// Estilos reutilizables
+const cardStyle = {
+  fontSize: "1.2em",
+  backgroundColor: "rgba(255,255,255,0.15)",
+  padding: "20px",
+  borderRadius: "15px",
+  boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+  marginTop: "20px"
+};
+
+function buttonStyle(active) {
+  return {
+    backgroundColor: active ? "rgba(255,255,255,0.3)" : "transparent",
+    border: "none",
+    color: "white",
+    fontSize: "1.2em",
+    padding: "10px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    width: "100%",
+    textAlign: "left"
+  };
 }

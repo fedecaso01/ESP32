@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import { FaHome, FaClock } from "react-icons/fa";
 
 export default function Home() {
   const [data, setData] = useState([]);
   const [activeTab, setActiveTab] = useState("ubicacion");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -15,7 +17,6 @@ export default function Home() {
 
         const json = await response.json();
         if (Array.isArray(json) && json.length > 0) {
-          // Los datos ya vienen formateados desde Apps Script
           setData(json);
         } else {
           setData([]);
@@ -50,18 +51,24 @@ export default function Home() {
           color: "white"
         }}
       >
-        {/* Menú lateral */}
+        {/* Barra lateral deslizable */}
         <aside
+          onMouseEnter={() => setSidebarOpen(true)}
+          onMouseLeave={() => setSidebarOpen(false)}
           style={{
-            width: "200px",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            padding: "20px",
+            width: sidebarOpen ? "220px" : "60px",
+            backgroundColor: "rgba(0,0,0,0.3)",
+            padding: "20px 10px",
             display: "flex",
             flexDirection: "column",
-            gap: "20px"
+            alignItems: sidebarOpen ? "flex-start" : "center",
+            gap: "20px",
+            transition: "width 0.3s ease"
           }}
         >
-          <h2 style={{ marginBottom: "30px" }}>Agro IoT</h2>
+          {sidebarOpen && (
+            <h2 style={{ marginBottom: "30px", alignSelf: "center" }}>La Pachamama</h2>
+          )}
           <button
             onClick={() => setActiveTab("ubicacion")}
             style={{
@@ -72,10 +79,15 @@ export default function Home() {
               padding: "10px",
               borderRadius: "8px",
               cursor: "pointer",
-              textAlign: "left"
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              width: "100%",
+              textAlign: sidebarOpen ? "left" : "center"
             }}
           >
-            Ubicación
+            <FaHome />
+            {sidebarOpen && "Ubicación"}
           </button>
           <button
             onClick={() => setActiveTab("momento")}
@@ -87,10 +99,15 @@ export default function Home() {
               padding: "10px",
               borderRadius: "8px",
               cursor: "pointer",
-              textAlign: "left"
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              width: "100%",
+              textAlign: sidebarOpen ? "left" : "center"
             }}
           >
-            Momento
+            <FaClock />
+            {sidebarOpen && "Momento"}
           </button>
         </aside>
 
@@ -101,11 +118,14 @@ export default function Home() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "flex-start",
             textAlign: "center",
             padding: "40px"
           }}
         >
+          {/* Título centrado */}
+          <h1 style={{ marginBottom: "40px", fontSize: "2em" }}>Agro IoT</h1>
+
           {lastRecord ? (
             <>
               {/* Último registro */}

@@ -230,3 +230,15 @@ export default function Home() {
                           )}
                         </div>
                       ))}
+                    </div>
+                  ) : (
+                    <p>No hay registros anteriores.</p>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            <p>No hay datos disponibles.</p>
+          )}
+        </main>
+     

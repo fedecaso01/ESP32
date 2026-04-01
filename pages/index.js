@@ -241,4 +241,7 @@ export default function Home() {
             <p>No hay datos disponibles.</p>
           )}
         </main>
-     
+      </div>
+    </>
+  );
+}

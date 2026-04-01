@@ -3,7 +3,7 @@ import Head from "next/head";
 
 export default function Home() {
   const [data, setData] = useState([]);
-  const [activeTab, setActiveTab] = useState("ubicacion"); // pestaña activa
+  const [activeTab, setActiveTab] = useState("ubicacion");
 
   useEffect(() => {
     async function fetchData() {
@@ -11,10 +11,7 @@ export default function Home() {
         const response = await fetch(
           "https://script.google.com/macros/s/AKfycbw56ThQfcvNzkQzzgaj94gJjqCms0jB_z7MwjbZ92Hlh_fpO_UhifSzRUwFfWQTuwu6GQ/exec"
         );
-
-        if (!response.ok) {
-          throw new Error("Respuesta HTTP no OK: " + response.status);
-        }
+        if (!response.ok) throw new Error("Respuesta HTTP no OK: " + response.status);
 
         const json = await response.json();
         if (Array.isArray(json) && json.length > 0) {
@@ -32,9 +29,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // Último registro
   const lastRecord = data.length > 0 ? data[data.length - 1] : null;
-  // Últimos 4 anteriores
   const previousRecords = data.slice(-5, -1).reverse();
 
   return (
@@ -49,11 +44,9 @@ export default function Home() {
         style={{
           fontFamily: "'Montserrat', sans-serif",
           minHeight: "100vh",
-          margin: 0,
           display: "flex",
           background: "linear-gradient(to bottom, rgba(152,251,152,0.9), rgba(60,179,113,0.8))",
-          color: "white",
-          overflow: "hidden"
+          color: "white"
         }}
       >
         {/* Menú lateral */}
@@ -117,7 +110,7 @@ export default function Home() {
               {/* Último registro */}
               <div
                 style={{
-                  fontSize: "1.8em",
+                  fontSize: "1.5em",
                   marginBottom: "30px",
                   backgroundColor: "rgba(255,255,255,0.15)",
                   padding: "20px 40px",
@@ -139,7 +132,7 @@ export default function Home() {
               </div>
 
               {/* Registros anteriores */}
-              <div style={{ fontSize: "1.2em", width: "100%", maxWidth: "400px" }}>
+              <div style={{ fontSize: "1.1em", width: "100%", maxWidth: "400px" }}>
                 <p>Registros anteriores:</p>
                 {previousRecords.length > 0 ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>

@@ -34,7 +34,6 @@ export default function Home() {
   const lastRecord = data.length > 0 ? data[data.length - 1] : null;
   const previousRecords = data.slice(-5, -1).reverse();
 
-  // Función para generar resumen del historial
   function resumenHistorial(records) {
     if (records.length === 0) return "No hay registros anteriores.";
     return records.map((item) => `${item.dia} ${item.hora}`).join(" | ");
@@ -57,7 +56,7 @@ export default function Home() {
           color: "white"
         }}
       >
-        {/* Barra lateral deslizable */}
+        {/* Barra lateral */}
         <aside
           onMouseEnter={() => setSidebarOpen(true)}
           onMouseLeave={() => setSidebarOpen(false)}
@@ -159,12 +158,10 @@ export default function Home() {
             padding: "40px"
           }}
         >
-          {/* Título centrado */}
           <h1 style={{ marginBottom: "40px", fontSize: "2em" }}>Agro IoT</h1>
 
           {lastRecord ? (
             <>
-              {/* Último registro */}
               {activeTab !== "historial" && (
                 <div
                   style={{
@@ -190,7 +187,6 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Registros anteriores */}
               {activeTab === "historial" ? (
                 <div
                   style={{
@@ -224,4 +220,13 @@ export default function Home() {
                           {activeTab === "ubicacion" ? (
                             <>
                               <div><strong>Ciudad:</strong> {item.ciudad}</div>
-                              <div><strong>Lugar:</strong> {item.lugar}</
+                              <div><strong>Lugar:</strong> {item.lugar}</div>
+                            </>
+                          ) : (
+                            <>
+                              <div><strong>Día:</strong> {item.dia}</div>
+                              <div><strong>Hora:</strong> {item.hora}</div>
+                            </>
+                          )}
+                        </div>
+                      ))}
